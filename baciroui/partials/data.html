@@ -1,0 +1,225 @@
+<!-- JAVA SCRIPT FOR DROPDOWN FORM-CONTROL -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("select").change(function(){
+			$(this).find("option:selected").each(function(){
+				if($(this).attr("value")=="offline"){
+					$(".kotak").not(".offline").hide();
+					$(".offline").show();
+				}
+				else if($(this).attr("value")=="online"){
+					$(".kotak").not(".online").hide();
+					$(".online").show();
+				}
+				else{
+					$(".offline").show();
+				}
+			});
+		}).change();
+	});
+	$(document).ready(function(){ document.title='Baciro Gateway - Ingestion';});
+</script>
+
+<div class="col-lg-12" ng-controller="dataCtrl">
+	<div class="col-md-12 clear-padding">
+		<div class="panel-baciro" style="min-height: 510px">
+			<div class="col-md-6">
+				<h3 style="padding: 5px 5px 10px 45px;" class="fa fa-cloud-upload"> Submit Data Form</h3>
+				<form ng-submit="processForm()">
+
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Mode
+						</div>
+
+						<div class="col-md-9">
+							<div>
+								<select class="baciro-input-select" ng-model="dataForm.mode_selected" ng-options="m as m.name for m in dataForm.modeList" ng-init="dataForm.mode_selected=dataForm.modeList[0]"></select>								
+							</div>
+						</div>
+					</div>
+
+					<div class="kotak offline" ng-if="dataForm.mode_selected.id==0">
+						<div class="baciro-input-line">
+							<div class="col-md-3">
+								File
+							</div>
+							<div class="col-md-9">
+								<input  class="baciro-input" type="file" ng-model="dataForm.mode_selected.file" placeholder="File Type" required base-sixty-four-input maxsize="500" accept=".json, .txt, .xml, .csv" /> 
+							</div>
+						</div>
+						<div class="baciro-input-line">
+							<div class="col-md-3">
+								&nbsp;
+							</div>
+							<div class="col-md-9">
+								<table class="table table-bordered table-striped">
+									<tr>
+										<th>Name</th>
+										<th>Type</th>
+										<th>Size (<i><small>KB</small></i>)</th>
+										<th>base64</th>
+									</tr>
+									<tr ng-show="dataForm.mode_selected.file">
+										<td>{{dataForm.mode_selected.file.filename}}</td>
+										<td>{{dataForm.mode_selected.file.filetype}}</td>
+										<td>{{dataForm.mode_selected.file.filesize / 1000}}</td>
+										<td>{{dataForm.mode_selected.file.base64.substring(0, 4)}}</td>
+									</tr>
+									<tr>
+										<td colspan="4" ng-show="!file">
+											<small><i>No file selected.</i></small>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>					
+						
+					</div>
+					<div class="kotak online" ng-if="dataForm.mode_selected.id==1">
+						<div class="baciro-input-line">
+							<div class="col-md-3">
+								URL
+							</div>
+							<div class="col-md-9">
+								<input class="baciro-input" type="text" name="urlName" ng-model="dataForm.mode_selected.url" placeholder="URL" required /> 
+							</div>
+						</div>
+					</div>
+
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							File Type
+						</div>
+						<div class="col-md-9">
+							<div ng-repeat="fileType in dataForm.fileType">
+								<select required class="baciro-input-select" required ng-model="dataForm.fileType[$index].fileType" ng-options="item.name as item.name for item in dataConfig.fileType" ng-change="dataChangefileType($index)">
+									
+								</select>
+								<br/>
+								<a ng-click="toggleTable($index)">Show/hide details</a>
+								<table class="table table-striped" ng-show="dataForm.fileType[$index].toggle">
+									<tr>
+										<th>Name</th>
+										<th>Data type</th>
+									</tr>
+									<tr  ng-repeat="ce in dataForm.params">
+										<td >
+											<a><i title="Remove Row" class="fa fa-trash" ng-click="removeRow($index)"></i></a>
+
+											<span>
+												<input required type="text" required ng-model="dataForm.params[$index].col" ng-name="ce.col" placeholder="Index of {{$index}}"/>
+											</span>
+										</td>
+										<td>
+											<span>
+												<select required class="baciro-input-select" required ng-model="dataForm.params[$index].type" ng-name="ce.type" ng-options="ce.type as ce.type for ce in dataForm.globalType">
+												</select>
+											</span>																					
+										</td>
+									</tr>
+
+									<tr>
+										<td>&nbsp;</td>
+										<td><span class="plus-link"><a ng-click="addRow()" title="Add Row"><i class="fa fa-plus-circle"></i></a></span></td>
+									</tr>
+								</table>
+								
+							</div>
+						</div>
+					</div>
+
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Collections
+						</div>
+						<div class="col-md-9">
+							<div>
+								<select required class="baciro-input-select" ng-model="dataForm.getCollections.select_collections" ng-options="gc as gc for gc in dataForm.getCollections.messages" ng-change="dataChangecollections($index)">
+									<option value="">Select Name</option>									
+								</select>
+								<br />
+								<a ng-click="toggleTableCollections($index)">Show/hide details</a>
+								<table class="table table-striped" ng-show="tableToggleCollections">
+									<tr>
+										<th>Name</th>
+										<th>Type</th>
+										<th>Data Type</th>
+									</tr>
+									<tr ng-repeat="collections in dataForm.getCollectionsID">
+										<td>
+											<span>
+												<b>{{ collections.name }}</b>
+											</span>
+										</td>
+
+										<td>
+											<span>
+												{{ collections.type }}
+											</span>
+										</td>
+										<td>
+											<span>
+												<select class="baciro-input-select" ng-model="dataForm.pr[collections.name]">
+													<option ng-model="dataForm.params[$index].col" ng-repeat="ce in dataForm.params" value="{{ ce.col }}">{{ce.col}}</option>
+												</select>
+											</span>																					
+										</td>
+									</tr>
+									
+								</table>
+								
+							</div>
+						</div>
+					</div>
+
+					
+					<div class="baciro-input-line" style="margin-bottom:30px;">
+						<div class="col-md-3">
+							Table Mode
+						</div>
+						
+						<div class="col-md-9">
+							<div>
+								<select required class="baciro-input-select" required ng-model="dataForm.tabel_selected" ng-options="t as t.name for t in dataForm.tableList" ng-init="dataForm.tabel_selected=dataForm.tableList[0]">
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- <div class="baciro-input-line">
+						<div class="col-md-3">JSON Model</div>			
+						<div class="col-md-9">
+
+							{{dataForm.fileType | json}}<hr>
+
+							{{dataForm.params | json}}<hr>
+
+							{{dataForm.mode_selected | json}}<hr>
+
+							{{dataForm.tabel_selected | json}} <hr>
+
+							{{dataForm.getCollections.select_collections | json}} <hr>
+
+							{{dataForm.getCollectionsID | json}} <hr>
+
+						</div>			
+					</div> -->
+
+					<div class="baciro-input-line" style="margin-top:30px;">
+						<div class="col-md-3"></div>
+						<div class="col-md-3">
+							<button type="submit" ng-click="submitted=true" class="btn btn-default">Submit button</button>
+						</div>
+						<div class="col-md-3">
+							<button type="reset" class="btn btn-default">Reset Button</button>
+						</div>
+					</div>
+				</form>
+
+			</div>			
+		</div>
+
+	</div>
+</div>
+

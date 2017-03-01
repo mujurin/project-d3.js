@@ -1,0 +1,142 @@
+<!-- JAVA SCRIPT FOR DROPDOWN FORM-CONTROL -->
+<script type="text/javascript">
+	$(document).ready(function(){ document.title='Baciro Gateway - D3JS Form';});
+</script>
+
+<div class="col-lg-12" ng-app="showHideApp" ng-controller="visualCtrl">
+	<div class="col-md-12 clear-padding">
+		<div class="panel-baciro" style="min-height: 510px">
+			<div class="col-md-6">
+				<h3 style="padding: 5px 5px 10px 45px;" class="fa fa-cloud-upload"> D3JS Form</h3>
+				<form ng-submit="processd3js()">
+
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Core Name
+						</div>
+						<div class="col-md-9">
+							<div>
+								<select required class="baciro-input-select" ng-model="dataForm.selected_core_name.select_core" ng-options="gc as gc for gc in dataForm.selected_core_name.messages" ng-change="dataChangeCore($index)">
+									<option value="">Select Core Name</option>									
+								</select>
+								<br />								
+							</div>
+						</div>
+					</div>					
+
+					<div class="baciro-input-line" style="margin-bottom:30px;">
+						<div class="col-md-3">
+							Field
+						</div>
+						
+						<div class="col-md-9" >
+							<div>
+								<select required class="baciro-input-select" required ng-model="dataForm.resultsCoreId.cores">
+									<option ng-model="dataForm.resultsCoreId[$index].name" ng-repeat="fl in dataForm.resultsCoreId" value="{{fl.name}}">{{fl.name}}
+									<option value="">Select Field Name</option>									
+
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					
+					<div class="baciro-input-line" style="margin-bottom:30px;">
+						<div class="col-md-3">
+							Table Mode
+						</div>
+						
+						<div class="col-md-9">
+							<div>
+								<select required class="baciro-input-select" required ng-model="dataForm.tabel_selected" ng-options="t as t.name for t in dataForm.tableList" ng-init="dataForm.tabel_selected=dataForm.tableList[0]">
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="baciro-input-line" style="margin-bottom:30px;">
+						<div class="col-md-3">
+							Vertivcal Name
+						</div>
+						
+						<div class="col-md-9">
+							<div>
+								<input class="baciro-input" type="text" name="vName" ng-model="dataForm.vName" placeholder="Input the Vertical Name">
+							</div>
+						</div>
+					</div>
+
+					<div class="baciro-input-line" style="margin-bottom:30px;">
+						<div class="col-md-3">
+							Horizontal Name
+						</div>
+						
+						<div class="col-md-9">
+							<div>
+								<input class="baciro-input" type="text" name="hName" ng-model="dataForm.hName" placeholder="Input the Horizontal Name">
+							</div>
+						</div>
+					</div>
+
+					<!-- <div class="baciro-input-line" style="margin-bottom:30px;">
+						<div class="col-md-3">
+							Value
+						</div>
+						
+						<div class="col-md-9">
+							<div>
+								<input class="baciro-input" type="text" name="val" ng-model="dataForm.valueFormText" placeholder="Input the Value">
+							</div>
+						</div>
+					</div> -->
+
+					<!-- <div class="baciro-input-line">
+						<div class="col-md-3">JSON Model</div>			
+						<div class="col-md-9">
+
+							{{dataForm.fileType | json}}<hr>
+
+							{{dataForm.params | json}}<hr>
+
+							{{dataForm.mode_selected | json}}<hr>
+
+							{{dataForm.tabel_selected | json}} <hr>
+
+							{{dataForm.getCollections.select_collections | json}} <hr>
+
+							{{dataForm.getCollectionsID | json}} <hr>
+
+						</div>			
+					</div> -->
+
+					<div class="baciro-input-line" style="margin-top:30px;">
+						<div class="col-md-3"></div>
+						<div class="col-md-3">
+							<button type="submit" ng-click="submitted=true" class="btn btn-default">Submit button</button>
+						</div>
+						<div class="col-md-3">
+							<button type="reset" class="btn btn-default">Reset Button</button>
+						</div>
+					</div>
+				</form>            
+			</div>
+
+            <div class="col-md-12">
+                <div class=".baciro-list" style="margin-top:30px;">
+                    <div id="hasil" width="1000" height="800" style="margin-bottom:20px" ></div>  
+                    <div class="col-md-3">
+				        <button type="button" class="btn btn-default"  id="save">Save as PNG</button>
+				    </div>
+				    <div class="col-md-3">
+				        <button type="button" class="btn btn-default" id="savepdf">Save as PDF</button>
+				    </div>
+                    
+                    <canvas id="Canvas" width="1000" height="800"  style="display:none;"></canvas>
+                    <canvas id="canvaspdf" width="800" height="500"  style="display:none;"></canvas>
+				</div>
+            </div>
+
+		</div>
+	</div>
+</div>
+

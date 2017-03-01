@@ -1,0 +1,67 @@
+<div class="col-lg-12" ng-controller="userCtrl">
+  <div class="col-md-12 clear-padding">
+  
+    <div class="panel-baciro" style="min-height: 510px">
+	    <div class="col-md-6">
+	      <h3 style="padding: 5px 5px 10px 25px;">Edit User</h3>
+	      <form name="regForm" ng-submit="EditMember(user.uid)" ng-init="loadEditUser();">
+				<div class="baciro-input-line">
+					<div class="col-md-3">
+						Email
+					</div>
+					<div class="col-md-9">
+						<input class="baciro-input" type="email" ng-model="user.email" name="email" placeholder="Email" required /> 
+					</div>
+				</div>
+				<div class="baciro-input-line">
+					<div class="col-md-3">
+						Firstname
+					</div>
+					<div class="col-md-9">
+						<input class="baciro-input" type="text" ng-model="user.firstname" name="firstname" placeholder="Firstname" required /> 
+					</div>
+				</div>
+				<div class="baciro-input-line">
+					<div class="col-md-3">
+						Lastname
+					</div>
+					<div class="col-md-9">
+						<input class="baciro-input" type="text" ng-model="user.lastname" name="lastname" id="lastname" placeholder="Lastname" required />
+					</div>
+				</div>
+				<div class="baciro-input-line">
+					<div class="col-md-3">
+						Role
+					</div>
+					<div class="col-md-9">
+						<select ng-model="user.role" class="baciro-input-select">
+							<option value="Operator">Operator</option>
+							<option value="Administrator">Administrator</option>
+						</select>
+					</div>
+				</div>
+				<div class="baciro-input-line">
+					<div class="col-md-3">
+						Password
+					</div>
+					<div class="col-md-9">
+						<input class="baciro-input" type="password" ng-model="user.password" name="password" id="password" placeholder="Leave blank, if you don't want to change" />
+					</div>
+				</div>
+				<div class="baciro-input-line">
+					<div class="col-md-3">
+						
+					</div>
+					<div class="col-md-3">
+						<button type="submit" class="baciro-button-alert" ng-click="submitted=true">Update</button>
+					</div>
+					<div class="col-md-3" style="padding-left: 0px;padding-right: 30px;">
+						<button type="button" class="baciro-button-grey" ng-click="linkCancel()">Cancel</button>
+					</div>
+				</div>
+		  </form>
+	    </div>
+    </div>
+
+  </div>
+</div>

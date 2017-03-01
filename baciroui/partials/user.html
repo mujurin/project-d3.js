@@ -1,0 +1,39 @@
+<div class="col-lg-12" ng-controller="userCtrl">
+  <div class="col-md-12 clear-padding">
+    <div class="panel-baciro">
+      <h3 style="padding: 5px 5px 10px 5px;">Add New User <span class="plus-link"><a ng-click="linkAdduser()" title="Add New User"><i class="fa fa-plus-circle"></i></a></span><input type="text" ng-model="q" placeholder="Search" class="baciro-search pull-right" /></h3>
+      <div style="overflow-x:auto;">
+	      <table>
+	        <tr>
+	          <th>No</th>
+	          <th><a ng-click="orderByMe('email')">Email</a></th>
+	          <th><a ng-click="orderByMe('firstname')">Firstname</a></th>
+	          <th><a ng-click="orderByMe('lastname')">Lastname</a></th>
+	          <th><a ng-click="orderByMe('role')">Role</a></th>
+	          <th style="min-width: 30%;">Api Key</th>
+	          <th style="min-width: 60px;">#</th>
+	        </tr>
+	        <tr ng-if="status" dir-paginate="row in data | orderBy:myOrderBy | filter:q | itemsPerPage: pageSize" current-page="currentPage" pagination-id="userPagination">
+	          <td>{{((currentPage - 1) * pageSize) + $index + 1}}</td>
+	          <td style="text-align: left;">{{row.email}}</td>
+	          <td style="text-align: left;">{{row.firstname}}</td>
+	          <td style="text-align: left;">{{row.lastname}}</td>
+	          <td>{{row.role}}</td>
+	          <td ng-if="row.apikey != ''">{{row.apikey[0].apikey}}</td>
+			  <td ng-if="row.apikey == ''"><a><i class="fa fa-plus-circle add-apikey" title="Add Api Key" ng-click="AddApikey(row.uid)"></i></a></td>
+				<td>
+	          		<a class="edit-link" title="Edit User" ng-click="linkEdit(row.user_id)"><i class="fa fa-pencil-square-o"></i></a>
+	          		<a class="delete-link" title="Delete User" ng-click="deleteMember(row.user_id)" confirmationNeeded><i class="fa fa-times-circle"></i></a>
+	          </td>
+	        </tr>
+	        <tr ng-if="!status">
+	        	<td colspan="7" style="color: #666;text-align: left;font-size: 12px"><i class="fa fa-exclamation-triangle"></i> Error, please check your API config</td>
+	        </tr>
+	      </table>
+	      <div class="text-center">
+            <dir-pagination-controls boundary-links="true" template-url="partials/dirPagination.tpl.html" pagination-id="userPagination"></dir-pagination-controls>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

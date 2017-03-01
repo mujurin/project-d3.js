@@ -1,0 +1,345 @@
+    <div class="col-lg-12">
+      <div class="col-md-6">
+        <div class="panel-baciro" ng-controller="ozieeCtrl">
+          <h3>Last 5 Job Submited</h3>
+          <table>
+            <tr>
+              <th>Job Name</th>
+              <th>Submit Date</th>
+              <th>Status</th>
+            </tr>
+            <tr ng-repeat="row in dataoziee | orderBy:'qtip.startTime' | limitTo:5">
+              <td>{{row.qtip.jobName}}</td>
+              <td>{{row.qtip.startTime}}</td>
+              <td>{{row.qtip.status}}</td>
+            </tr>
+              <tr ng-if="!status">
+	        	<td colspan="3" style="color: #666;text-align: left;font-size: 12px">{{data}}</td>
+	        </tr>
+           
+          </table>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel-baciro" ng-controller="ozieeCtrl">
+          <h3>Last 5 Job Finished</h3>
+          <table>
+            <tr>
+              <th>Job Name</th>
+              <th>Finish Date</th>
+              <th>Status</th>
+            </tr>
+             <tr ng-repeat="row in dataoziee | limitTo:5">
+              <td>{{row.qtip.jobName}}</td>
+              <td>{{row.qtip.endTime}}</td>
+              <td>{{row.qtip.status}}</td>
+            </tr>
+              <tr ng-if="!status">
+	        	<td colspan="3" style="color: #666;text-align: left;font-size: 12px">{{data}}</td>
+	        </tr>
+            
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <div class="col-md-6">
+        <div class="panel-baciro">
+          <h3>Graph Job in 7 Days</h3>
+         <div id="bar_dashboard"></div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel-baciro">
+          <h3>Graph Status Job in 7 Days</h3>
+          <div id="line_dashboard"></div>
+        </div>
+      </div>
+    </div>
+
+<script>
+    function timeToDate(timestamp)
+    {
+        var date = new Date(timestamp * 1000);
+        var year = date.getFullYear();
+        var getMonth = parseInt(date.getMonth()+1);
+        var month = "0" + getMonth;
+        var day = "0" + date.getDate();
+        var hours = "0" + date.getHours();
+        var minutes = "0" + date.getMinutes();
+        var seconds = "0" + date.getSeconds();
+        var formattedTime = year + '-' + month.substr(-2) + '-' + day.substr(-2) + ' ' + hours + ':' + minutes + ':' + seconds;
+        return formattedTime;
+    }
+    
+    function timeToDay(timestamp)
+    {
+        var date = new Date(timestamp * 1000);
+        var year = date.getFullYear();
+        var getMonth = parseInt(date.getMonth()+1);
+        var month = "0" + getMonth;
+        var day = "0" + date.getDate();
+        var hours = "0" + date.getHours();
+        var minutes = "0" + date.getMinutes();
+        var seconds = "0" + date.getSeconds();
+        var formattedTime = year + '-' + month.substr(-2) + '-' + day.substr(-2);
+        return formattedTime;
+    }
+    
+    apikeyid = "96f7be8fa7af5e537d165a21dcd3f7626b2a09cb4af4307d00eab41126abeb8c";
+    
+    $.ajax({
+        type : 'GET',
+        url  : "http://192.168.1.231:3001/oozie/listjob/"+apikeyid, 
+        success: function(data, textStatus, jqXHR) 
+        {
+            var columns_data_by_status = [];
+            var columns_data = [];
+            
+            var columns_data_count = ['COUNT_DATA'];
+            var columns_data_x_axis = ['x'];
+            var columns_data_succeeded = ['SUCCEEDED'];
+            var columns_data_failed = ['FAILED'];
+            var columns_data_suspended = ['SUSPENDED'];
+            var columns_data_killed = ['KILLED'];
+            
+            var arr_time_succeeded = []; // SUCCEEDED
+            var arr_time_failed = []; // FAILED
+            var arr_time_suspended = []; // SUSPENDED
+            var arr_time_killed = []; // KILLED  
+            
+            var check_time_succeeded = false;
+            var check_time_failed = false;
+            var check_time_suspended = false;
+            var check_time_killed = false;
+            
+            var messages = data.message; // array banyak
+            // console.log('len messages = '+messages.length);
+            for(var i = 1; i <= 7; i ++) 
+            {
+                
+                if(i === 1) 
+                {
+                    
+                 var timestamp_startTime = ((new Date(new Date().setHours(0,0,0,0)).getTime() / 1000)|0); // ini ori. ubah
+                  
+                } 
+                else 
+                {
+                  timestamp_startTime -= 86400;
+                 }
+                
+                // push x axis label
+                columns_data_x_axis.push(timeToDay(timestamp_startTime));
+                
+                var count_time = []; // untuk menghitung jumlah (count) data pada tanggal data yang sama dengan tanggal yang di-looping
+                
+                var count_time_succeeded = [];
+                var count_time_failed = [];
+                var count_time_suspended = [];
+                var count_time_killed = [];
+
+                messages.forEach(function(obj, j, context)
+                {
+                    
+                    var qtip = obj.qtip;
+                    var status = qtip.status;
+
+                    var startTime = qtip.startTime;											
+                    var date = startTime.split(" ");
+                    
+                    var startTimestamp = (new Date(date[1]+' '+date[2]+' '+date[3]).getTime()/1000)| 0;
+                    
+                    if(timestamp_startTime === startTimestamp)
+                    {
+                        count_time.push(status); 
+                        
+                        if(status === 'SUCCEEDED')
+                        {
+                            count_time_succeeded.push(status); // untuk menghitung count nilai yang sama
+                            check_time_succeeded = true;
+                            
+                        }
+                        else if(status === 'FAILED')
+                        {
+                            count_time_failed.push(status); // untuk menghitung count nilai yang sama
+                            check_time_failed = true;
+                        }
+                        else if(status === 'SUSPENDED') 
+                        {
+                            count_time_suspended.push(status); // untuk menghitung count nilai yang sama
+                            check_time_suspended = true;
+                        }
+                        else if(status === 'KILLED')
+                        {
+                            count_time_killed.push(status); // untuk menghitung count nilai yang sama
+                            check_time_killed = true;
+							
+                          }
+                    }
+                });
+                
+                // SUCCEEDED
+                var count_succeeded = 0;
+                if(check_time_succeeded === true)
+                {
+                    count_succeeded =  count_time_succeeded.length;
+                    // ubah jadi false
+                    check_time_succeeded = false;
+                }
+
+                // Proses push ke data untuk dimapping ke grafik
+                arr_time_succeeded.push({
+                    'status' : 'SUCCEEDED',
+                    'startTime' : timestamp_startTime,
+                    'date' : timeToDate(timestamp_startTime),
+                    'count' : count_succeeded
+                });
+                columns_data_succeeded.push(count_succeeded);
+
+                // FAILED
+                var count_failed = 0;
+                if(check_time_failed === true)
+                {
+                    count_failed =  count_time_failed.length;
+                    // ubah jadi false
+                    check_time_failed = false;
+                }
+
+                // Proses push ke data untuk dimapping ke grafik
+                arr_time_failed.push({
+                    'status' : 'FAILED',
+                    'startTime' : timestamp_startTime,
+                    'date' : timeToDate(timestamp_startTime),
+                    'count' : count_failed
+                });
+                columns_data_failed.push(count_failed);
+                
+                // SUSPENDED
+                var count_suspended = 0;
+                if(check_time_suspended === true)
+                {
+                    count_suspended =  count_time_suspended.length;
+                    // ubah jadi false
+                    check_time_suspended = false;
+                }
+
+                // Proses push ke data untuk dimapping ke grafik
+                arr_time_suspended.push({
+                    'status' : 'SUSPENDED',
+                    'startTime' : timestamp_startTime,
+                    'date' : timeToDate(timestamp_startTime),
+                    'count' : count_suspended
+                });
+                columns_data_suspended.push(count_suspended);
+
+                // KILLED
+                var count_killed = 0;
+                if(check_time_killed === true)
+                {
+                    count_killed =  count_time_killed.length;
+                    // ubah jadi false
+                    check_time_killed = false;
+                }
+
+                // Proses push ke data untuk dimapping ke grafik
+                arr_time_killed.push({
+                    'status' : 'KILLED',
+                    'startTime' : timestamp_startTime,
+                    'date' : timeToDate(timestamp_startTime),
+                    'count' : count_killed
+                });
+                columns_data_killed.push(count_killed);
+                
+                // push count data
+                columns_data_count.push(count_time.length);
+            }
+            
+            columns_data_by_status.push(
+                columns_data_x_axis, // ['x', '2010-01-01', '2011-01-01', '2012-01-01', '2013-01-01', '2014-01-01', '2015-01-01'],
+                columns_data_succeeded, columns_data_failed, columns_data_suspended, columns_data_killed);
+            
+            columns_data.push(
+                columns_data_x_axis,
+                columns_data_count // ['COUNT_DATA',]
+            );
+            
+            // BAR
+            var bar = c3.generate({
+                bindto: '#bar_dashboard',
+                data: 
+                {
+                    x: 'x',
+                    columns: columns_data,
+                    type: 'bar'
+                },
+                axis : 
+                {
+                    x : 
+                    {
+                        type : 'timeseries',
+                        tick: 
+                        {
+                         format: '%Y-%m-%d' // format string is also available for timeseries data
+                        }
+                    }
+                },
+                bar: 
+                {
+                    width: 
+                    {
+                        ratio: 0.5 // this makes bar width 50% of length between ticks
+                    }
+                },
+                color: 
+                {
+                    pattern: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69"]
+                },
+                tooltip: 
+                {
+                     grouped : false
+                }
+            });
+
+            // LINE
+            var line = c3.generate({
+                bindto: '#line_dashboard',
+                data: 
+                {   
+                    x: 'x',
+                    columns: columns_data_by_status,
+                    type: 'line'
+                },
+                axis : {
+                    x : {
+                        type : 'timeseries',
+                        tick: 
+                        	{
+                           format: '%Y-%m-%d' // format string is also available for timeseries data
+                        }
+                    }
+                },
+                line: 
+                {
+                    width: 
+                    {
+                        ratio: 0.5 // this makes bar width 50% of length between ticks
+                    }
+                },
+                color: 
+                {
+                    pattern: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69"]
+                },
+                tooltip: 
+                {
+                     grouped : false
+                }
+            });   
+        },
+        error: function(jqXHR, textStatus, errorThrown) 
+        {
+            console.log('Error get data = ' + JSON.stringify(jqXHR));
+        }
+    });
+</script>

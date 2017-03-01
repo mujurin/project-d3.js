@@ -1,0 +1,92 @@
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.arc text {
+  font: 10px sans-serif;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
+#hasil {
+  position: absolute;
+    left: 280px;
+    margin-top: -550px;
+}
+#hasilreal {
+    margin-bottom: 0px;
+    
+}
+
+#but {
+    margin-left: 20px;    
+}    
+    
+#inputkan{
+  margin: 20px;
+    margin-top: -10px;
+}
+caption, p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin: 20px;
+}
+    
+ul.tab {
+    list-style-type: none;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 5px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Float the list items side by side */
+ul.tab li {float: left;}
+
+/* Style the links inside the list items */
+ul.tab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of links on hover */
+ul.tab li a:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+ul.tab li a:focus, .active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}

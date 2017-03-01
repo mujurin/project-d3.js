@@ -1,0 +1,235 @@
+
+
+<div class="col-lg-12" ng-controller="flumeCtrl">
+	<div class="col-md-12 clear-padding">
+		<div class="panel-baciro" style="min-height: 510px">
+			<div class="col-md-6">
+				<h3 style="padding: 5px 5px 10px 25px;">Add New Agent</h3>
+				<form name="regForm" ng-submit="AddAgent()">
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Agent Name
+						</div>
+						<div class="col-md-9">
+							<input class="baciro-input" type="text" ng-model="flumeForm.agentName"  name="agentname" placeholder="Agent Name" required /> 
+						</div>
+					</div>
+
+					<div class="baciro-input-line" id="files">
+						<div class="col-md-3">
+							Sources
+						</div>
+						<div class="col-md-9">
+							<div ng-repeat="source in flumeForm.sources">
+							<select class="baciro-input-select" required ng-model="flumeForm.sources[$index].type" ng-options="item.name as item.name for item in flumeConfig.sources" ng-change="flumeChangeSource($index)">
+								
+							</select>
+							<br />
+							<a ng-click="toggleTable($index)">Show/hide details</a> |
+							<a ng-click="removeFlumeSource($index)">Remove this source</a><br />
+							Source Name: <input type="text" ng-model="flumeForm.sources[$index].source_name" required />
+							<table class="table table-striped" ng-show="flumeForm.sources[$index].toggle">
+								<tr>
+									<th>Property</th>
+									<th>Value</th>
+								</tr>
+								<tr ng-repeat="s in flumeForm.sources[$index].params">
+									<td ng-switch="s.required">
+										<span ng-switch-when="yes">
+											<b>{{ s.name }}*</b>
+										</span>
+										<span ng-switch-default>
+											{{ s.name }}
+										</span>
+									</td>
+									<td ng-switch="s.required">
+										<span ng-switch-when="yes">
+											<input type="text" required ng-model="s.value" ng-if="s.name!='channels'" />
+											<span ng-if="s.name=='channels'">Channels should be set in the flume flow column below</span>
+										</span>
+										<span ng-switch-default>
+											<input type="text" ng-model="s.value" />
+										</span>
+									</td>
+								</tr>
+							</table>
+							
+							</div>
+							
+							<span class="plus-link"><a ng-click="flumeAddSource()" title="Add New Source"><i class="fa fa-plus-circle"></i></a></span>
+						</div>
+					</div>
+
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Channels
+						</div>
+
+						<div class="col-md-9">
+							<div ng-repeat="channel in flumeForm.channels">
+							<select class="baciro-input-select flume_class" required ng-model="flumeForm.channels[$index].type" ng-options="item.name as item.name for item in flumeConfig.channels" ng-change="flumeChangeChannel($index)"> 
+								
+							</select>
+							<br />
+							<a ng-click="toggleChannelTable($index)">Show/hide details</a> |
+							<a ng-click="removeFlumeChannel($index)">Remove this channel</a>
+							<br />
+							Channel Name: <input type="text" ng-model="flumeForm.channels[$index].channel_name" required />
+							<table class="table table-striped" ng-show="flumeForm.channels[$index].toggle">
+								<tr>
+									<th>Property</th>
+									<th>Value</th>
+								</tr>
+								<tr ng-repeat="c in flumeForm.channels[$index].params">
+									<td ng-switch="c.required">
+										<span ng-switch-when="yes">
+											<b>{{ c.name }}*</b>
+										</span>
+										<span ng-switch-default>
+											{{ c.name }}
+										</span>
+									</td>
+									<td ng-switch="c.required">
+										<span ng-switch-when="yes">
+											<input type="text" ng-model="c.value" required />
+										</span>
+										<span ng-switch-default>
+											<input type="text" ng-model="c.value" />
+										</span>
+										
+									</td>
+								</tr>
+							</table>
+							</div>
+							 
+							<span class="plus-link"><a ng-click="flumeAddChannel()" title="Add New Channel"><i class="fa fa-plus-circle"></i></a></span>
+						</div>
+
+					</div>
+
+
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Sinks
+						</div>
+						<div class="col-md-9">
+							<div ng-repeat="channel in flumeForm.sinks">
+							<select class="baciro-input-select flume_class_sink" required ng-model="flumeForm.sinks[$index].type" ng-options="item.name as item.name for item in flumeConfig.sinks" ng-change="flumeChangeSink($index)"> 
+							
+								
+							</select>
+							<br />
+							<a ng-click="toggleSinkTable($index)">Show/hide details</a> |
+							<a ng-click="removeFlumeSink($index)">Remove this sink</a>
+							<br />
+							Sink Name: <input type="text" ng-model="flumeForm.sinks[$index].sink_name" required />
+							<table class="table table-striped" ng-show="flumeForm.sinks[$index].toggle">
+								<tr>
+									<th>Property</th>
+									<th>Value</th>
+								</tr>
+								<tr ng-repeat="sk in flumeForm.sinks[$index].params">
+									<td ng-switch="sk.required">
+										<span ng-switch-when="yes">
+											<b>{{ sk.name }}*</b>
+										</span>
+										<span ng-switch-default>
+											{{ sk.name }}
+										</span>
+									</td>
+									<td ng-switch="sk.required">
+										<span ng-switch-when="yes">
+											<input type="text" ng-model="sk.value" required ng-if="sk.name!='channel'" />
+											<span ng-if="sk.name=='channel'">Channel should be set in the flume flow column below</span>
+										</span>
+										<span ng-switch-default>
+											<input type="text" ng-model="sk.value" />
+										</span>
+									</td>
+								</tr>
+							</table>
+							</div>
+
+							<span class="plus-link"><a ng-click="flumeAddSink()" title="Add New Sink"><i class="fa fa-plus-circle"></i></a></span>
+						</div>
+					</div>
+
+					<!--<div class="baciro-input-line clearfix" ng-repeat="cn in flumeForm.connectors">
+						<div class="col-md-3">
+							Connector {{ $index }}
+						</div>
+						<div class="col-md-3">
+							<select class="baciro-input-select" ng-model="flumeForm.connectors[$index].sources" ng-options="item as item.source_name for item in flumeForm.sources">
+							
+							</select>
+
+						</div>
+						<div class="col-md-3">
+							<select class="baciro-input-select" ng-model="flumeForm.connectors[$index].channel" ng-options="item as item.channel_name for item in flumeForm.channels">
+							
+							</select>
+						</div>
+						<div class="col-md-3">
+							<select class="baciro-input-select" ng-model="flumeForm.connectors[$index].sink" ng-options="item as item.sink_name for item in flumeForm.sinks">
+							
+							</select>
+							
+						</div>
+					</div>-->
+					
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Flume Flow
+						</div>
+						<div class="col-md-9">
+							<table class="table table-striped">
+								<thead>
+									<th>Sources</th>
+									<th>Channel</th>
+									<th>Sink</th>
+								</thead>
+								<tbody>
+									<tr ng-repeat="c in flumeForm.channels">
+										<td>
+											<div ng-repeat="s in flumeForm.sources">
+												<input type="checkbox" value="{{ s.source_name }}" id="connector_source_{{$parent.$index}}_{{$index}}"> {{ s.source_name }}
+											</div>
+										</td>
+										<td>{{ c.channel_name }}</td>
+										<td>
+											<select id="connector_sink_{{$index}}">
+												<option ng-repeat="sk in flumeForm.sinks" value="{{ $index }}">{{sk.sink_name}}</option>
+											</select>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="baciro-input-line">
+						<div class="col-md-3">
+							Additional Settings:<br />
+							<i>Use on your own risk</i>
+						</div>
+						<div class="col-md-9">
+							<textarea class="form-control" ng-model="flumeForm.additional"></textarea>
+						</div>
+					</div>
+					
+					<div class="baciro-input-line" style="margin-bottom: 50px;">
+						<div class="col-md-3"></div>
+						<div class="col-md-9">
+							<a class="btn btn-info" ng-click="preview()">Check</a>
+						
+							<button type="submit" class="btn btn-info" ng-if="flumeForm.register_ready" ng-click="registerConfig()">Register</button>
+						
+							<button type="button" class="btn btn-danger" ng-click="linkCancel()">Cancel</button>
+						</div>
+					</div>
+					
+				</div>			
+			</div>
+
+		</div>
+	</div>
+
